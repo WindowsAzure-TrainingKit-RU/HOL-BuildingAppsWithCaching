@@ -13,6 +13,11 @@ namespace CloudShop.Services
     {
         private static readonly ObjectCache cacheProvider;
 
+        public static ObjectCache CacheProvider
+        {
+            get { return cacheProvider; }
+        }
+
         static DataSourceFactory()
         {
             string provider = ConfigurationManager.AppSettings["CacheService.Provider"];
@@ -28,11 +33,6 @@ namespace CloudShop.Services
                         break;
                 }
             }
-        }
-
-        public static ObjectCache CacheProvider
-        {
-            get { return cacheProvider; }
         }
 
         public static IProductRepository GetProductsRepository(bool enableCache)

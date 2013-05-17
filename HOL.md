@@ -25,14 +25,12 @@ During this lab, you will explore how to use these features in a simple Asp.Net 
 The following is required to complete this hands-on lab:
 
 - [Microsoft Visual Studio 2012 Express for Web][1] or higher
-- [Windows Azure Tools for Microsoft Visual Studio 1.8][2]
+- [Windows Azure Tools for Microsoft Visual Studio 2.0][2]
 - A Windows Azure subscription - [sign up for a free trial](http://aka.ms/WATK-FreeTrial)
 
 [1]: http://www.microsoft.com/visualstudio/
 [2]: http://www.windowsazure.com/en-us/develop/downloads/
 [3]: http://aka.ms/WATK-FreeTrial
-
->**Note:** This lab was designed for Windows 8.
 
 <a name="Setup" />
 ### Setup ###
@@ -44,7 +42,7 @@ In order to run the exercises in this hands-on lab you need to set up your envir
 
 >**Note:** Make sure you have checked all the dependencies for this lab before running the setup.
 
->This lab requires a Windows Azure SQL Database to start. To build the Northwind2 database automatically, the **Setup.cmd** file will prompt to you with your Windows Azure SQL Database account information. Remember to update the NorthwingEntities connection string in the application’s configuration file to point to your database for each solution.
+>This lab requires a Windows Azure SQL Database to start. To build the Northwind2 database automatically, the **Setup.cmd** file will prompt to you with your Windows Azure SQL Database account information. Remember to update the NorthwindEntities connection string in the application’s configuration file to point to your database for each solution.
 
 >Remember to configure the firewall setting your Windows Azure SQL Database account to allow you to specify a list of IP addresses that can access your Windows Azure SQL Database Server. The firewall will deny all connections by default, so **be sure to configure your allow list** so you can connect to the database. Changes to your firewall settings can take a few moments to become effective. For additional information on how to prepare your Windows Azure SQL Database account, refer to the exercise 1 of the Introduction to Windows Azure SQL Database lab in the training kit.
 
@@ -66,7 +64,7 @@ Throughout the lab document, you will be instructed to insert code blocks. For y
 This hands-on lab includes the following exercises:
 
 1. [Enable Cache service for Session State](#Exercise1)
-1. [Caching Data with Cache service](#Exercise2)
+1. [Caching Data with Windows Azure Caching](#Exercise2)
 1. [Creating a Reusable and Extensible Caching Layer](#Exercise3)
 
 Estimated time to complete this lab: **60 minutes**.
@@ -76,12 +74,12 @@ Estimated time to complete this lab: **60 minutes**.
 <a name="Exercise1" />
 ### Exercise 1: Enable Cache service for Session State ###
 
-In this exercise, you will explore the use of the session state provider for Cache service as the mechanism for out-of-process storage of session state data. For this purpose, you will use the Azure Store-a sample shopping cart application implemented with Asp.Net MVC4. You will run this application in the compute emulator and then modify it to take advantage of the Windows Azure Cache service as the back-end store for the Asp.Net session state. You will start with a begin solution and explore the sample using the default Asp.Net in-proc session state provider. Next, you will add references to the Cache assemblies and configure the session state provider to store the contents of the shopping cart in the distributed cache cluster provided by Cache service.
+In this exercise, you will explore the use of the session state provider for Cache service as the mechanism for out-of-process storage of session state data. For this purpose, you will use the Cloud Shop-a sample shopping cart application implemented with Asp.Net MVC4. You will run this application in the compute emulator and then modify it to take advantage of the Windows Azure Cache service as the back-end store for the Asp.Net session state. You will start with a begin solution and explore the sample using the default Asp.Net in-proc session state provider. Next, you will add references to the Cache assemblies and configure the session state provider to store the contents of the shopping cart in the distributed cache cluster provided by Cache service.
 
 <a name="Ex1Task1" />
-#### Task 1 – Running the Azure Store Sample Site in the Compute Emulator ####
+#### Task 1 – Running the Cloud Shop Sample Site in the Compute Emulator ####
 
-In this task, you will run the Azure Store application in the compute emulator using the default session state provider; you will change that provider to take advantage of the Windows Azure Cache service later on.
+In this task, you will run the Cloud Shop application in the compute emulator using the default session state provider; you will change that provider to take advantage of the Windows Azure Cache service later on.
 
 1. Start **Microsoft Visual Studio 2012 Express for Web** as administrator.
 1. Open the **Begin** solution located at **Source\\Ex1-CacheSessionState\\Begin**.
@@ -92,21 +90,22 @@ In this task, you will run the Azure Store application in the compute emulator u
 	
 	>To set the start page, in **Solution Explorer**, right-click the **CloudShop** project and select **Properties**. In the **Properties** window, select the **Web** tab and in the **Start Action**, select **Specific Page**. Leave the value of this field blank.
 
-1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** in the connectionStrings section with the Windows Azure SQL Database server name, Administrator Username and Administrator password that you registered at the portal and used for creating the database during setup.
+1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** in the connectionStrings section with the Windows Azure SQL Database server name, administrator username and administrator password that you registered at the portal and used for creating the database during setup.
 
-	>**Note:** Make sure that you follow the instructions of the setup section to create a copy of the Northwind2 database in your own Windows Azure SQL Database account and configure your Windows Azure SQL Database firewall settings.
+	>**Note:** Make sure that you followed the instructions of the setup section to create a copy of the Northwind2 database in your own Windows Azure SQL Database account and configure your Windows Azure SQL Database firewall settings.
 
-1. Press **CTRL** + **F5** to build and run the application withouth debugging in the compute emulator. 
+1. Press **CTRL** + **F5** to build and run the application without debugging in the compute emulator. 
 
 	>**Note:** Make sure that you run the application without debugging. With debugging mode you won't be able to recycle the web role
 
 1. Explore the main page of the application, the **Products** page, which displays a list of products obtained from a Windows Azure SQL Database.
 
-	![Azure Store products page](Images/azure-store-products-page.png?raw=true "Azure Store products page")
+	![Cloud Shop products page](Images/azure-store-products-page.png?raw=true "Cloud Shop products page")
 
-	_Azure Store products page_
+	_Cloud Shop products page_
 
 1. Select a product from the list and click **Add item to cart**. You may repeat the process to store additional items in the shopping cart.
+
 1. Click the **Checkout** link to view the contents of the cart. Verify that the items you selected appear on the list. These items are stored in the current session.
 
 	![Checkout page showing the contents of the shopping cart](Images/checkout-page-showing-the-contents-of-the-sho.png?raw=true "Checkout page showing the contents of the shopping cart")
@@ -114,14 +113,16 @@ In this task, you will run the Azure Store application in the compute emulator u
 	_Checkout page showing the contents of the shopping cart_
 
 1. Navigate back to **Products** page.
+
 1. Click on **Recycle** link. This link forces the web role to be recycled. Once you click on the link, the Products page will turn blank.
+
 1. In the **Compute Emulator**, observe how the web role is recycled by the emulator:
 
 	![Suspending the service role instance](Images/suspending-the-service-role-instance.png?raw=true "Suspending the service role instance")
 
 	_Web role recycled_
 
-1. Got back to browser, remove */Home/Recylce* from address bar, and then press Enter to reload the site. The **Products** page should come back normal after a short delay.
+1. Go back to the browser. Remove */Home/Recycle* from the address bar, and then press **Enter** to reload the site. The **Products** page should come back normal after a short delay.
 
 1. Navigate to **Checkout** page. Notice that the order now appears empty.
 
@@ -131,19 +132,22 @@ In this task, you will run the Azure Store application in the compute emulator u
 
 <a name="Ex1Task2" />
 #### Task 2 – Adding a dedicated caching role ####
-In this task, you will add a new worker role that serves as a dedicated cache host. All other web roles and worker roles in the Cloud Service will be able to access the Cache service hosted by this role. You can set up multiple such dedicated work roles within your Cloud Service. In addition, you can also enable Cache service on any of the existing roles and allocate certain percentage of virtual machine memory to be used as cache. 
+In this task, you will add a new worker role that serves as a dedicated cache host. All other web roles and worker roles in the Cloud Service will be able to access the Cache service hosted by this role. You can set up multiple such dedicated worker roles within your Cloud Service. In addition, you can also enable Cache service on any of the existing roles and allocate certain percentage of virtual machine memory to be used as cache. 
 
-1. In solution explorer, expand **CloudShop.Azure** node, and then right-click on **Roles**. Then, select **Add**->**New Worker Role Project...***.
-2. In **Add New Role Project** dialog, select **Cache Worker Role** template. Name the role as **CacheWorkerRole**, and then click **Add**.
+1. In solution explorer, expand **CloudShop.Azure** node, and then right-click on **Roles**. Then, select **Add** | **New Worker Role Project...**.
 
-  >**Note:** All Cache hosts in your Cloud Service share their runtime states via a Windows Azure Blog Storage. By default, a cache work role is configured to use development storage. You can change this setting in **Caching** tab on the role property page. 
+1. In **Add New .NET Framework 4.5 Role Project** dialog, select **Cache Worker Role** template. Name the role as **CacheWorkerRole**, and then click **Add**.
+
+	>**Note:** All Cache hosts in your Cloud Service share their runtime states via a Windows Azure Blob Storage. By default, a cache worker role is configured to use development storage. You can change this setting in the **Caching** tab on the role property page. 
+
+1. Press **CTRL + SHIFT + S** to save all the items.
 
 <a name="Ex1Task3" />
 #### Task 3 – Configuring Session State Using Windows Azure Cache service ####
 
 In this task, you will change the Session State provider to take advantage of the Windows Azure Cache as the storage mechanism. This requires adding the appropriate assemblies to the **CloudShop** project and then updating the corresponding configuration in the **Web.config** file. 
 
-1. In Visual Studio 2012 Express for Web, open **Package manager Console** from **Tools**->**Library package Manager**->**Package Manager Console** menu.
+1. In Visual Studio 2012 Express for Web, open **Package manager Console** from **Tools** | **Library package Manager** | **Package Manager Console** menu.
 
 1. Make sure that **CloudShop** is selected in the **Default project** drop-down list. Issue the following command to install the Nuget package for Cache service:  
  
@@ -154,10 +158,9 @@ In this task, you will change the Session State provider to take advantage of th
 1. Open the **Web.config** file located in the root folder of the **CloudShop** project.
 1. Change **[cache cluster role name]** to **CacheWorkerRole**.
 
-	<!--mark: 4-->
+	<!--mark: 3-->
 	```` XML
 	<dataCacheClients>
-     <tracing sinkType="DiagnosticSink" traceLevel="Error" />
       <dataCacheClient name="default">
        <autoDiscover isEnabled="true" identifier="CacheWorkerRole" />
       <!--<localCache isEnabled="true" sync="TimeoutBased" objectCount="100000" ttlValue="300" />-->
@@ -168,6 +171,7 @@ In this task, you will change the Session State provider to take advantage of th
 
 1. Add a new session state provider configuration under System.Web tag:  
 
+	<!--mark: 3-9-->
 	````XML
 	<system.Web>
 	...
@@ -187,9 +191,9 @@ In this task, you will change the Session State provider to take advantage of th
 #### Task 4 – Verification ####
 
 1. Press **Ctrl + F5** to build and run the application. Wait for the browser to launch and show the **Products** page. 
-1. Select one product from the list and click Add item to cart. Repeat the process to store additional items in the cart.
+1. Select one product from the list and click **Add item to cart**. Repeat the process to store additional items in the cart.
 1. Click the **Checkout** link to view the contents of the shopping cart. Verify that the items you selected appear on the list.
-1. Navigate back to **Products** page and click on "Recycle" link.
+1. Navigate back to **Products** page and click on **Recycle** link.
 1. Observe the web role getting recycled in **Show Compute Emulator UI**. 
 1. Go back to browser, remove */Home/Recycle* from address, and then press Enter to reload the site.
 1. **Products** page should load correctly. Navigate to **Checkout** page. Notice that the order is intact. This confirms that with the Windows Azure Caching provider, the session state is stored outside the role instance and can persist through application restarts.
@@ -201,7 +205,7 @@ In this task, you will change the Session State provider to take advantage of th
 <a name="Exercise2" />
 ### Exercise 2: Caching Data with Windows Azure Caching ###
 
-This exercise will show you how to use the Windows Azure Caching to cache results from queries to Windows Azure SQL Database. You will continue with a solution based on the one used for the previous exercise the only difference is in the home page, which has been updated to show the elapsed time to retrieve the list of products in the catalog, and now has a link to enable or disable the use of the cache.
+This exercise will show you how to use the Windows Azure Caching to cache results from queries to Windows Azure SQL Database. You will continue with a solution based on the one used for the previous exercise. The only difference is in the home page, which has been updated to show the elapsed time to retrieve the list of products in the catalog, and now has a link to enable or disable the use of the cache.
 During the exercise, you will update the data access code with a trivial implementation of caching. It uses the canonical pattern, in which the code checks the cache first to retrieve the results of a query and, if there is no data available, executes the query against the database to cache the results.
 
 <a name="Ex2Task1" />
@@ -210,16 +214,16 @@ During the exercise, you will update the data access code with a trivial impleme
 To make use of Windows Azure Caching, you first need to create a **DataCacheFactory** object. This object determines the cache cluster connection information, which is set programmatically or by reading settings from the configuration file. Typically, you create an instance of the factory class and use it for the lifetime of the application. To store data in the cache, you request a **DataCache** instance from the **DataCacheFactory** and then use it to add or retrieve items from the cache.
 In this task, you update the data access code to cache the result of queries to Windows Azure SQL Database using the Windows Azure Caching. 
 
-1. Start **Microsoft Visual Studio 2012 Express for Web** as an administrator.
+1. Start **Microsoft Visual Studio 2012 Express for Web** as administrator.
 1. Open the **Begin** solution located at **Source\\Ex2-CachingData\\Begin**.
 
 	>**Important:** Before you execute the solution, make sure that the start-up project is set. For MVC projects, the start page must be left blank. 
 	> To set the startup project, in **Solution Explorer**, right-click the **CloudShop.Azure** project and then select **Set as StartUp Project**. 
 	> To set the start page, in **Solution Explorer**, right-click the **CloudShop** project and select **Properties**. In the **Properties** window, select the **Web** tab and in the **Start Action**, select **Specific Page**. Leave the value of this field blank.
 
-1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** with the Windows Azure SQL Database server name, Administrator Username and Administrator password that you registered at the portal and used for creating the database during setup.
+1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** with the Windows Azure SQL Database server name, administrator username and administrator password that you registered at the portal and used for creating the database during setup.
 
-	> **Note:** 	Make sure that you follow the instructions of the setup section to create a copy of the Northwind2 database in your own Windows Azure SQL Database account and configure your Windows Azure SQL Database firewall settings.
+	> **Note:** 	Make sure that you followed the instructions of the setup section to create a copy of the Northwind2 database in your own Windows Azure SQL Database account and configure your Windows Azure SQL Database firewall settings.
 
 1. Open the **ProductsRepository.cs** file in the **Services** folder of the **CloudShop** project.
 1. Add a namespace directive for **Microsoft.ApplicationServer.Caching**.
@@ -415,7 +419,7 @@ In this task, you will update the application to allow control of the use of the
 	}
 	````
 
-1. In the same method, locate the code that creates a new **IndexViewModel** instance and replace its initialization with the following (highlighted) code block.
+1. In the same method, locate the code that creates a new **IndexViewModel** instance and replace the product property initialization with the following (highlighted) code block.
 
 	(Code Snippet - _BuildingAppsWithCachingService-Ex2-IndexViewModel initialization-CS_)
 	<!--mark: 22-25-->
@@ -472,7 +476,7 @@ In this task, you will update the application to allow control of the use of the
 	 }
 	````
 
-1. Press **F5** to build and launch the application in the compute emulator.
+1. Press **Ctrl** + **F5** to build and launch the application in the compute emulator.
 
 	>**Note:** Ideally, you should test the code in Windows Azure. When you execute the application in the compute emulator, consider that accessing the Windows Azure SQL Database data source and the Windows Azure Caching require executing requests to resources located outside the bounds of your own network. Depending on your geographic location, both requests may exhibit a relatively high latency, which may overshadow the difference between the cached and non-cached scenarios. Once you deploy the application to Windows Azure, it is co-located in the same data center as the Windows Azure Caching service in Windows Azure SQL Database. As the latency is much lower, the results should be more significant.
 
@@ -547,7 +551,7 @@ When using Windows Azure Caching, you have the option of using a local cache tha
 	...
 	````
 
-1. Open the **HomeController.cs** file in the **Controllers** folder and find the **Index** action. Locate the line that instantiates a new **ProductsRepository** and Replace those lines with the following highlighted code:
+1. Open the **HomeController.cs** file in the **Controllers** folder and find the **Index** action. Locate the line that instantiates a new **ProductsRepository** and replace those lines with the following highlighted code:
 
 	(Code Snippet - _BuildingAppsWithCachingService-Ex2-GetProducts LocalCache-CS_)
 	<!--mark: 7-10; strike: 11-13-->
@@ -656,9 +660,9 @@ When using Windows Azure Caching, you have the option of using a local cache tha
 	</fieldset>
 ````
 
-1. Press **F5** to build and launch the application in the compute emulator.
+1. Press **Ctrl** + **F5** to build and launch the application in the compute emulator.
  
-1. When you start the application, the cache option is initially disabled and the local cache option is hidden (it will be shown once you enable cache). Enable cache and then the local cache. 
+1. When you start the application, the cache option is initially disabled and the local cache option is hidden (it will be shown once you enable it). Enable cache and then the local cache. 
 
 1. Refresh the page several times until the elapsed time stabilizes. Notice that the reading is now significantly lower, possibly under a millisecond, showing that the application now retrieves the data from the local in-memory cache. 
 
@@ -690,9 +694,9 @@ To use a given cache service with the **CachedDataSource** derived class, you ne
 
 Currently, the Windows Azure Caching does not supply its own **ObjectCache** implementation. Nevertheless, you can create one that provides a wrapper around its services. You will find an example of such an implementation, the **AzureCacheProvider**, in the **BuildingAppsWithCacheService\\Source\\Assets** folder. This class derives from **ObjectCache** to expose the services in the Windows Azure Caching.
 
-To take advantage of this caching implementation in the Azure Store application, you will create a caching counterpart of the **ProductsRepository** class. The application uses this class, which implements an **IProductsRepository** contract with a single **GetProducts** operation, to retrieve catalog information from Windows Azure SQL Database. To create a caching products catalog source, you need to perform the following steps:
+To take advantage of this caching implementation in the Cloud Shop application, you will create a caching counterpart of the **ProductsRepository** class. The application uses this class, which implements an **IProductRepository** contract with a single **GetProducts** operation, to retrieve catalog information from Windows Azure SQL Database. To create a caching products catalog source, you need to perform the following steps:
 
-- Create a new **CachingProductsReposity** class that inherits from **CachedDataSource**.
+- Create a new **CachingProductsRepository** class that inherits from **CachedDataSource**.
 
 - Add a constructor to the new class that receives an **IProductRepository** parameter with an instance of the non-caching data source class as well as an **ObjectCache** parameter with an instance of the caching provider to use.
 
@@ -709,11 +713,11 @@ In this task, you will create the abstract class that you will use as the base c
 
 	>**Important:** 	Before you execute the solution, make sure that the start-up project is set. For MVC projects, the start page must be left blank.  
 	
-	> To set the start up project, in **Solution Explorer**, right-click the **CloudShop.Azure** project and then select **Set as StartUp Project**. 
+	> To set the startup project, in **Solution Explorer**, right-click the **CloudShop.Azure** project and then select **Set as StartUp Project**. 
 
 	> To set the start page, in **Solution Explorer**, right-click the **CloudShop** project and select **Properties**. In the **Properties** window, select the **Web** tab and in the **Start Action**, select **Specific Page**. Leave the value of this field blank.
 
-1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** with the Windows Azure SQL Database server name, Administrator Username and Administrator password that you registered at the portal and used for creating the database during setup.
+1. In the **Web.config** file, update the _NorthwindEntities_ connection string to point to your database. Replace **[YOUR-SQL-DATABASE-SERVER-ADDRESS]**, **[SQL-DATABASE-USERNAME]**, and **[SQL-DATABASE-PASSWORD]** with the Windows Azure SQL Database server name, administrator username and administrator password that you registered at the portal and used for creating the database during setup.
 
 	>**Note:** 	Make sure that you follow the instructions of the setup section to create a copy of the Northwind2 database in your own Windows Azure SQL Database account and configure your Windows Azure SQL Database firewall settings.
 
@@ -782,7 +786,7 @@ In this task, you will create the abstract class that you will use as the base c
 	}
 	````
 
-	>**Note:** The **CachedDataSource** constructor receives an ObjectCache ([http://msdn.microsoft.com/en-us/library/system.runtime.caching.objectcache.aspx](http://msdn.microsoft.com/en-us/library/system.runtime.caching.objectcache.aspx)) instance as a parameter, which provides methods and properties for accessing an object cache, as well as a region name.  A cache region is a partition in the cache used to organize cache objects.
+	>**Note:** The **CachedDataSource** constructor receives an [ObjectCache] ([http://msdn.microsoft.com/en-us/library/system.runtime.caching.objectcache.aspx](http://msdn.microsoft.com/en-us/library/system.runtime.caching.objectcache.aspx) instance as a parameter, which provides methods and properties for accessing an object cache, as well as a region name.  A cache region is a partition in the cache used to organize cache objects.
 
 1. Next, add the following (highlighted) method to retrieve data from the cache.
 
@@ -1058,7 +1062,7 @@ In this task, you will update the application to take advantage of the data sour
 
 1. Click the **Recycle** link to recycle the role and reload the configuration. Once you click on the link, the Products page will turn blank.
 
-1. Got back to browser, remove _/Home/Recylce_ from address bar, and then press Enter to reload the site. The **Products** page should come back normal after a short delay.
+1. Go back to the browser, remove _/Home/Recycle_ from the address bar, and then press **Enter** to reload the site. The **Products** page should come back normal after a short delay.
 
 1. Make sure that the cache is still enabled and then refresh the page in the browser **twice** to prime the cache with data. Notice that the elapsed times for the cached scenario have increased indicating that the application is now using the Windows Azure Caching provider instead of the in-memory provider.
 

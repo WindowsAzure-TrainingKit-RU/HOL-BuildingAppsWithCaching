@@ -28,8 +28,7 @@ namespace CloudShop.Controllers
             bool enableCache = (bool)this.Session["EnableCache"];
 
             // retrieve product catalog from repository and measure the elapsed time
-            Services.IProductRepository productRepository =
-                new Services.ProductsRepository();
+            Services.IProductRepository productRepository = new Services.ProductsRepository();
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             var products = productRepository.GetProducts();

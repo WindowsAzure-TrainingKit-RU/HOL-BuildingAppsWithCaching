@@ -44,7 +44,7 @@ IF ERRORLEVEL 1 GOTO ERROR
 echo =============================================================================
 echo SUCCESS: '%dbName%' database created on '%sqlServer%'
 echo REMEMBER change the connection string for each begin end solutions with your Windows Azure SQL Database account
-echo =========================================================================isq====
+echo =============================================================================
 GOTO EXIT
 
 :ERROR

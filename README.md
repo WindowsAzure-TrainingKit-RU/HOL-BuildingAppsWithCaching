@@ -1,4 +1,4 @@
-# Building Windows Azure Cloud Services with Cache Service #
+﻿# Building Windows Azure Cloud Services with Cache Service #
 
 ## Hands-on Lab ##
 
@@ -6,7 +6,7 @@
 
 Hands-On Labs are sets of step-by-step guides that are designed to help you learn how to use key Windows Azure services and features.  Each Lab provides instructions to guide you through the process of developing a complete application.
 
-In this lab, learn how to use the Windows Azure Caching service for both your ASP.NET session state and to cache data from your data-tier.  You will see how the Caching service provides your application with a cache that provides low latency and high throughput without having to configure, deploy, or manage the service.
+In this lab, you will learn how to use the Windows Azure Caching service for both your ASP.NET session state and to cache data from your data-tier.  You will see how the Caching service provides your application with a cache that provides low latency and high throughput without having to configure, deploy, or manage the service.
 
 > **Note:** You can download the latest build of the Windows Azure Training Kit which includes a tested version of this HOL from here: http://bit.ly/WindowsAzureTK.
 
